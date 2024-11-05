@@ -1,0 +1,21 @@
+<mat-card class="upload-clip-card" appearance="outlined">
+    <mat-card-content>
+        <div class="spaced-grid">
+            <div>
+                <button mat-stroked-button (click)="fileInput.click()" type="button">
+                    <mat-icon aria-hidden="false" aria-label="Video file icon" fontIcon="movie"></mat-icon>
+                    Choose File
+                </button>
+                <input hidden #fileInput type="file" id="file" (change)="handleFileInput($event)" accept=".mp4">
+            </div>
+            @if (this.preview != null) {
+            <p>{{this.fileToUpload?.name}}</p>
+            <video [src]="this.preview" class="image-container" controls>
+            </video>
+            }
+        </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button (click)="uploadFile()" [disabled]="!this.preview">Upload</button>
+    </mat-card-actions>
+</mat-card>
