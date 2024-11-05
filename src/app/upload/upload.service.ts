@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -13,8 +13,11 @@ export class UploadService {
     return this.http.put<string>('api/upload', uploadData);
   }
 
-  public uploadFile(uploadUrl: string, file: File): Observable<any> {
-    return this.http.put(uploadUrl, file);
+  public uploadFile(uploadUrl: string, file: File): Observable<HttpEvent<any>> {
+    return this.http.put(uploadUrl, file, {
+      reportProgress: true,
+      observe: "events"
+    });
   }
 }
 

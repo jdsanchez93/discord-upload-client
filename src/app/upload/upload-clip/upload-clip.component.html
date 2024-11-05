@@ -13,6 +13,9 @@
             <video [src]="this.preview" class="image-container" controls>
             </video>
             }
+            @if(this.isUploading) {
+            <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+            }
         </div>
     </mat-card-content>
     <mat-card-actions>
