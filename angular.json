@@ -65,6 +65,7 @@
               "buildTarget": "discord-upload-client:build:production"
             },
             "development": {
+              "proxyConfig": "src/proxy.conf.json",
               "buildTarget": "discord-upload-client:build:development"
             }
           },
