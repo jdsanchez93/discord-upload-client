@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { switchMap, tap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
 import { UploadService } from '../upload.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpEventType } from '@angular/common/http';
@@ -23,7 +23,7 @@ export class UploadClipComponent {
   fileToUpload: File | null = null;
   preview: any;
   isUploading: boolean = false;
-  uploadProgress: number = 0;
+  uploadProgress = signal(0);
 
   constructor(private uploadService: UploadService) { }
 
@@ -44,24 +44,30 @@ export class UploadClipComponent {
 
   uploadFile() {
     if (this.fileToUpload == null) {
+      console.error('No file selected.')
       return;
     }
 
+    this.isUploading = true;
+    this.uploadProgress.set(0);
+
     this.uploadService.callApiGateway({ fileName: this.fileToUpload.name })
       .pipe(
-        tap(() => this.isUploading = true),
-        switchMap((uploadUrl) => this.uploadService.uploadFile(uploadUrl, this.fileToUpload!))
-      )
-      .subscribe(event => {
-
-        if (event.type === HttpEventType.UploadProgress) {
-          this.uploadProgress = (event.loaded / event.total!) * 100
-          console.log("UploadProgressUploadProgress", event);
-        }
-        if (event.type === HttpEventType.Response) {
-          console.log("completed", event);
+        switchMap((uploadUrl) => this.uploadService.uploadFile(uploadUrl, this.fileToUpload!)),
+        tap(event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.uploadProgress.set((event.loaded / event.total!) * 100);
+          }
+          if (event.type === HttpEventType.Response) {
+            this.isUploading = false;
+          }
+        }),
+        catchError(err => {
+          console.error(err);
           this.isUploading = false;
-        }
-      });
+          return of();
+        })
+      )
+      .subscribe();
   }
 }
