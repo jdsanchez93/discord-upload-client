@@ -9,7 +9,10 @@
                 <input hidden #fileInput type="file" id="file" (change)="handleFileInput($event)" accept=".mp4">
             </div>
             @if (this.preview != null) {
-            <p>{{this.fileToUpload?.name}}</p>
+            <p>{{this.fileName()}}</p>
+            <div>
+                <p>{{(fileSizeInBytes() / 1000000) | number}} MB</p>
+            </div>
             <video [src]="this.preview" class="image-container" controls>
             </video>
             }
